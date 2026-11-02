@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Degree Hub | Degree Courses</title>
+<style>
+:root{--navy:#071b52;--blue:#1769c2;--light:#eef4ff;--ink:#18233d}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7ff;color:var(--ink)}
+header{background:var(--navy);color:white;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-size:21px;font-weight:800;letter-spacing:.5px}
+button{cursor:pointer;border:0;border-radius:12px;padding:12px 16px;font-size:15px}
+.home-btn,.back-btn{background:#fff;color:var(--navy);font-weight:700;border:1px solid #cbd8ef}
+.hero{background:linear-gradient(135deg,#09215f,#1977d2);color:white;text-align:center;padding:48px 18px 55px;border-radius:0 0 35px 35px}
+.hero h1{font-size:clamp(27px,5vw,42px);margin:10px 0}
+.hero p{opacity:.9}
+main{max-width:1000px;margin:28px auto;padding:0 16px 40px}
+.panel{background:white;border:1px solid #dce6fb;border-radius:18px;padding:22px;margin:16px 0;box-shadow:0 5px 18px #0b2b6410}
+h2{color:#244f91;margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
+.item-btn{width:100%;text-align:left;background:#f8faff;border:1px solid #bfd3f7;color:#183d79;padding:18px;font-weight:700;min-height:58px}
+.item-btn:hover{background:#eaf2ff;border-color:#4386df}
+.muted{color:#687895}
+.breadcrumb{font-size:14px;color:#60749a;margin-bottom:14px}
+.chapter{margin:10px 0;border:1px solid #dce6fb;border-radius:12px;overflow:hidden}
+.chapter summary{cursor:pointer;padding:15px;background:#f5f8ff;font-weight:700;color:#1d4d91}
+.questions{padding:10px 18px 16px;line-height:1.55}
+.questions li{margin:9px 0}
+.question-group{margin:12px 0;padding:12px;background:#fbfcff;border:1px solid #e1e9f8;border-radius:10px}
+.question-group h4{margin:0 0 8px;color:#244f91}
+.question-type{display:inline-block;font-size:12px;font-weight:700;padding:4px 8px;border-radius:20px;background:#e8f1ff;color:#24528f;margin:0 0 8px}
+.hidden{display:none}
+footer{text-align:center;background:var(--navy);color:white;padding:24px 12px}
+.small{font-size:13px}
+.note{background:#fff8e8;border:1px solid #f0d69a;border-radius:12px;padding:12px;color:#71551a;font-size:13px;line-height:1.5}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🎓 DEGREE HUB</div>
+  <button class="home-btn" onclick="showHome()">Home</button>
+</header>
+<section class="hero">
+  <p>WELCOME TO DEGREE HUB</p>
+  <h1>Learn Today. Lead Tomorrow.</h1>
+  <p>Your complete degree learning platform.</p>
+</section>
+<main>
+  <section id="homeView" class="panel">
+    <h2>Explore Your Courses</h2>
+    <p class="muted">Select your degree course</p>
+    <div id="courseList" class="grid">
+      <button class="item-btn" onclick="showSemesters(0)">🎓 B.Sc Computer Science</button>
+      <button class="item-btn" onclick="showSemesters(1)">🎓 B.Com</button>
+      <button class="item-btn" onclick="showSemesters(2)">🎓 BCA</button>
+      <button class="item-btn" onclick="showSemesters(3)">🎓 BBA</button>
+      <button class="item-btn" onclick="showSemesters(4)">🎓 BZC</button>
+    </div>
+    <p class="note">Note: The subjects and chapter titles in this starter website are sample study content, not a verified official Adikavi Nannaya University 2026–27 syllabus. Please compare them with your college syllabus before relying on them for exams.</p>
+  </section>
+  <section id="semesterView" class="panel hidden">
+    <div id="semesterCrumb" class="breadcrumb"></div>
+    <button class="back-btn" onclick="showHome()">← All Courses</button>
+    <h2 id="semesterHeading" style="margin-top:18px"></h2>
+    <p class="muted">Select a semester to view subjects.</p>
+    <div id="semesterList" class="grid"></div>
+  </section>
+  <section id="subjectView" class="panel hidden">
+    <div id="subjectCrumb" class="breadcrumb"></div>
+    <button class="back-btn" onclick="backToSemesters()">← Semesters</button>
+    <h2 id="subjectHeading" style="margin-top:18px"></h2>
+    <p class="muted">Select a subject to view its chapters and questions.</p>
+    <div id="subjectList" class="grid"></div>
+  </section>
+  <section id="chapterView" class="panel hidden">
+    <div id="chapterCrumb" class="breadcrumb"></div>
+    <button class="back-btn" onclick="backToSubjects()">← Subjects</button>
+    <h2 id="chapterHeading" style="margin-top:18px"></h2>
+    <p class="muted">Open a chapter to see practice questions.</p>
+    <div id="chapterList"></div>
+  </section>
+</main>
+<footer>
+  <div class="brand">🎓 DEGREE HUB</div>
+  <p>Learn Today. Lead Tomorrow.</p>
+  <div class="small">© 2026 Degree Hub</div>
+</footer>
+<script>
+// Editable sample course data. Verify all course structures against the
+// current official university/college syllabus before publishing.
+const courses = [
+{ name:"B.Sc Computer Science", semesters:[
+{semester:"1st Semester",subjects:[
+["Programming in C",["Introduction to C and problem solving","Data types, operators and expressions","Control statements and loops","Arrays and strings","Functions, pointers and structures"]],
+["Computer Fundamentals",["Introduction to computers","Number systems and data representation","Computer hardware and memory","Input and output devices","Operating systems and software"]],
+["Mathematics for Computing",["Sets, relations and functions","Logic and Boolean algebra","Matrices and determinants","Permutations and combinations","Basic probability"]]]},
+{semester:"2nd Semester",subjects:[
+["Data Structures",["Introduction to data structures","Arrays and linked lists","Stacks and queues","Trees and binary search trees","Graphs and searching/sorting"]],
+["Object Oriented Programming",["OOP concepts","Classes and objects","Inheritance and polymorphism","Constructors and exception handling","File handling"]],
+["Database Management Systems",["Database concepts and architecture","ER model and relational model","SQL and relational algebra","Normalization","Transactions and database security"]]]},
+{semester:"3rd Semester",subjects:[
+["Java Programming",["Java basics and environment","Classes, objects and inheritance","Packages and interfaces","Exception handling and multithreading","Collections and file handling"]],
+["Operating Systems",["OS concepts and services","Process management","CPU scheduling and synchronization","Memory management","File systems and device management"]],
+["Computer Networks",["Network fundamentals and models","Physical and data link layers","Network and transport layers","Application layer protocols","Network security basics"]]]},
+{semester:"4th Semester",subjects:[
+["Python Programming",["Python basics and data types","Control flow and functions","Lists, tuples, sets and dictionaries","Modules, files and exceptions","Object oriented programming in Python"]],
+["Software Engineering",["Software process models","Requirements analysis","Software design","Testing and quality assurance","Project planning and maintenance"]],
+["Web Technologies",["Internet and web basics","HTML and CSS","JavaScript fundamentals","Client-server and web forms","Introduction to web security"]]]},
+{semester:"5th Semester",subjects:[
+["Computer Organization",["Basic computer organization","Data representation and arithmetic","CPU and instruction cycle","Memory organization","Input/output organization"]],
+["Theory of Computation",["Finite automata","Regular expressions and languages","Context free grammars","Pushdown automata","Turing machines and computability"]],
+["Data Mining",["Introduction to data mining","Data preprocessing","Association rule mining","Classification and prediction","Clustering and applications"]]]},
+{semester:"6th Semester",subjects:[
+["Artificial Intelligence",["Introduction to artificial intelligence","Problem solving and search","Knowledge representation","Reasoning and planning","Machine learning basics and applications"]],
+["Cloud Computing",["Cloud computing fundamentals","Cloud architecture and service models","Virtualization","Cloud storage and security","Cloud platforms and applications"]],
+["Project Work and Seminar",["Problem identification and objectives","Literature survey","System analysis and design","Implementation and testing","Documentation, presentation and viva"]]]}
+]},
+{ name:"B.Com", semesters:[
+{semester:"1st Semester",subjects:[
+["Financial Accounting",["Introduction to accounting","Accounting principles and concepts","Journal, ledger and trial balance","Subsidiary books","Final accounts"]],
+["Business Organisation",["Nature and scope of business","Forms of business organisation","Business environment","Entrepreneurship basics","Business ethics and social responsibility"]],
+["Business Economics",["Introduction to economics","Demand and supply","Elasticity of demand","Production and cost","Market structures"]]]},
+{semester:"2nd Semester",subjects:[
+["Advanced Accounting",["Branch accounts","Departmental accounts","Hire purchase accounts","Installment purchase accounts","Consignment accounts"]],
+["Business Statistics",["Collection and presentation of data","Measures of central tendency","Measures of dispersion","Correlation","Index numbers"]],
+["Business Law",["Indian Contract Act basics","Offer and acceptance","Consideration and capacity","Performance and discharge of contracts","Sale of Goods Act basics"]]]},
+{semester:"3rd Semester",subjects:[
+["Corporate Accounting",["Share capital","Issue and forfeiture of shares","Debentures","Company final accounts","Amalgamation basics"]],
+["Cost Accounting",["Introduction to cost accounting","Material costing","Labour costing","Overheads","Methods of costing"]],
+["Banking and Financial Services",["Banking system in India","Types of banks","Banker and customer relationship","Negotiable instruments","Digital banking services"]]]},
+{semester:"4th Semester",subjects:[
+["Income Tax",["Basic concepts of income tax","Residential status","Heads of income","Deductions","Computation of total income"]],
+["Auditing",["Introduction to auditing","Audit planning","Internal control and check","Vouching and verification","Audit report"]],
+["Business Management",["Principles of management","Planning and decision making","Organising","Directing and leadership","Controlling"]]]},
+{semester:"5th Semester",subjects:[
+["Goods and Services Tax",["GST overview","Supply under GST","Time, value and place of supply","Input tax credit","GST returns and payment"]],
+["Management Accounting",["Introduction to management accounting","Financial statement analysis","Fund flow and cash flow","Marginal costing","Budgetary control"]],
+["Computerised Accounting",["Accounting software overview","Company creation and ledgers","Voucher entry","Inventory accounting","Reports and data backup"]]]},
+{semester:"6th Semester",subjects:[
+["Corporate Governance",["Corporate governance concepts","Board of directors","Shareholders and stakeholders","Corporate disclosures","Ethics and compliance"]],
+["Financial Management",["Introduction to financial management","Time value of money","Capital budgeting","Cost of capital","Working capital management"]],
+["Project Work",["Selecting a project topic","Objectives and methodology","Data collection","Analysis and findings","Report writing and presentation"]]]}
+]},
+{ name:"BCA", semesters:[
+{semester:"1st Semester",subjects:[
+["Computer Fundamentals",["Computer basics","Number systems","Computer hardware","Software concepts","Operating system basics"]],
+["Programming in C",["C basics","Data types and operators","Decision making and loops","Arrays and strings","Functions and pointers"]],
+["Mathematics for Computing",["Sets and functions","Logic","Matrices","Permutations and combinations","Probability"]]]},
+{semester:"2nd Semester",subjects:[
+["Data Structures",["Data structure concepts","Arrays and linked lists","Stacks","Queues","Trees and graphs"]],
+["Digital Electronics",["Number systems","Boolean algebra","Logic gates","Combinational circuits","Sequential circuits"]],
+["Database Management Systems",["Database concepts","ER model","Relational model","SQL","Normalization"]]]},
+{semester:"3rd Semester",subjects:[
+["Object Oriented Programming with Java",["Java fundamentals","Classes and objects","Inheritance","Interfaces and packages","Exceptions and threads"]],
+["Operating Systems",["OS introduction","Processes","CPU scheduling","Memory management","File systems"]],
+["Computer Networks",["Network basics","Network models","Data link layer","Network and transport layer","Application protocols"]]]},
+{semester:"4th Semester",subjects:[
+["Python Programming",["Python syntax and data types","Control statements","Functions","Collections and files","Modules and OOP"]],
+["Web Designing",["HTML basics","CSS styling","JavaScript basics","Forms and validation","Responsive web design"]],
+["Software Engineering",["Software life cycle","Requirements","Design","Testing","Maintenance"]]]},
+{semester:"5th Semester",subjects:[
+["Computer Graphics",["Graphics fundamentals","Line and circle drawing","2D transformations","Clipping","3D graphics basics"]],
+["Mobile Application Development",["Mobile platforms","Application components","User interface design","Data storage","Testing and deployment concepts"]],
+["Cyber Security",["Security fundamentals","Common threats","Cryptography concepts","Network and web security","Ethics and safe practices"]]]},
+{semester:"6th Semester",subjects:[
+["Cloud Computing",["Cloud concepts","Service and deployment models","Virtualization","Cloud storage","Cloud security"]],
+["Artificial Intelligence",["AI fundamentals","Search methods","Knowledge representation","Machine learning overview","AI applications and ethics"]],
+["Project Work",["Project selection","Requirement analysis","System design","Development and testing","Documentation and viva"]]]}
+]},
+{ name:"BBA", semesters:[
+{semester:"1st Semester",subjects:[
+["Principles of Management",["Nature of management","Evolution of management thought","Planning","Organising","Directing and controlling"]],
+["Business Communication",["Communication process","Written communication","Oral communication","Presentation skills","Business correspondence"]],
+["Business Economics",["Basic economic concepts","Demand and supply","Elasticity","Production and costs","Market structures"]]]},
+{semester:"2nd Semester",subjects:[
+["Financial Accounting",["Accounting concepts","Journal and ledger","Trial balance","Depreciation","Final accounts"]],
+["Business Statistics",["Data collection","Averages","Dispersion","Correlation","Index numbers"]],
+["Marketing Management",["Marketing concepts","Consumer behaviour","Market segmentation","Product and pricing","Promotion and distribution"]]]},
+{semester:"3rd Semester",subjects:[
+["Human Resource Management",["HRM concepts","Human resource planning","Recruitment and selection","Training and development","Performance appraisal"]],
+["Organisational Behaviour",["Individual behaviour","Personality and perception","Motivation","Group dynamics","Leadership and organisational culture"]],
+["Business Law",["Contract essentials","Offer and acceptance","Consideration","Breach of contract","Sale of goods basics"]]]},
+{semester:"4th Semester",subjects:[
+["Financial Management",["Financial management overview","Time value of money","Capital budgeting","Cost of capital","Working capital"]],
+["Operations Management",["Operations concepts","Facility location and layout","Production planning","Inventory management","Quality management"]],
+["Business Research Methods",["Research basics","Research problem and design","Sampling","Data collection","Report preparation"]]]},
+{semester:"5th Semester",subjects:[
+["Entrepreneurship Development",["Entrepreneurship concepts","Entrepreneurial qualities","Business idea generation","Business plan","Small business support"]],
+["Consumer Behaviour",["Consumer decision process","Factors influencing behaviour","Perception and learning","Attitudes","Consumer research"]],
+["Management Information Systems",["Information systems basics","Types of information systems","Systems analysis","Decision support systems","Information security"]]]},
+{semester:"6th Semester",subjects:[
+["Strategic Management",["Strategy concepts","Environmental analysis","Strategy formulation","Strategy implementation","Evaluation and control"]],
+["International Business",["Global business environment","International trade theories","Foreign market entry","Global institutions","International business risks"]],
+["Project Work",["Topic selection","Objectives and literature review","Research methodology","Analysis and recommendations","Report and presentation"]]]}
+]},
+{ name:"BZC", semesters:[
+{semester:"1st Semester",subjects:[
+["Botany – Fundamentals",["Introduction to plant science","Algae","Fungi","Lichens","Plant diversity overview"]],
+["Zoology – Animal Diversity",["Introduction to animal diversity","Protozoa","Porifera and Cnidaria","Platyhelminthes and Nematoda","Annelida and Arthropoda"]],
+["Chemistry – Fundamentals",["Atomic structure","Periodic properties","Chemical bonding","States of matter","Basic organic chemistry"]]]},
+{semester:"2nd Semester",subjects:[
+["Botany – Plant Anatomy",["Plant tissues","Meristematic and permanent tissues","Root anatomy","Stem anatomy","Leaf anatomy"]],
+["Zoology – Animal Organisation",["Cell structure","Animal tissues","Locomotion","Nutrition and digestion","Respiration"]],
+["Chemistry – Physical Chemistry",["Gaseous state","Liquid state","Chemical thermodynamics","Chemical equilibrium","Solutions"]]]},
+{semester:"3rd Semester",subjects:[
+["Botany – Plant Physiology",["Water relations","Mineral nutrition","Photosynthesis","Respiration","Plant growth regulators"]],
+["Zoology – Genetics",["Mendelian genetics","Chromosomes","Linkage and crossing over","Mutations","Molecular genetics basics"]],
+["Chemistry – Organic Chemistry",["Hydrocarbons","Aromatic compounds","Functional groups","Stereochemistry basics","Organic reaction mechanisms"]]]},
+{semester:"4th Semester",subjects:[
+["Botany – Plant Taxonomy",["Principles of taxonomy","Classification systems","Nomenclature","Important plant families","Herbarium techniques"]],
+["Zoology – Animal Physiology",["Blood and circulation","Excretion","Nervous coordination","Endocrine system","Reproductive physiology"]],
+["Chemistry – Inorganic Chemistry",["Coordination compounds","Transition elements","Chemical periodicity","Acids and bases","Environmental inorganic chemistry"]]]},
+{semester:"5th Semester",subjects:[
+["Botany – Ecology",["Ecosystem concepts","Population ecology","Community ecology","Biodiversity","Environmental conservation"]],
+["Zoology – Ecology and Evolution",["Ecological principles","Population and community","Ecosystems","Evolution theories","Conservation biology"]],
+["Chemistry – Analytical Chemistry",["Analytical methods","Volumetric analysis","Gravimetric analysis","Instrumental methods","Errors and data treatment"]]]},
+{semester:"6th Semester",subjects:[
+["Botany – Plant Biotechnology",["Plant tissue culture","Plant genetic engineering","Molecular markers","Applications of biotechnology","Bioethics and biosafety"]],
+["Zoology – Applied Zoology",["Economic importance of animals","Aquaculture basics","Apiculture","Sericulture","Wildlife conservation"]],
+["Chemistry – Applied Chemistry",["Polymers","Medicinal chemistry basics","Industrial chemistry","Green chemistry","Chemical safety and applications"]]]}
+]}
+];
+
+let currentCourse=0,currentSemester=0,currentSubject=0;
+function hideAll(){["homeView","semesterView","subjectView","chapterView"].forEach(id=>document.getElementById(id).classList.add("hidden"));}
+function showHome(){hideAll();document.getElementById("homeView").classList.remove("hidden");window.scrollTo(0,0);}
+function buildCourses(){
+ // Course buttons are also written directly in the HTML so they remain visible
+ // in website builders that delay or partially block JavaScript execution.
+ const list=document.getElementById("courseList");
+ if(list.children.length) return;
+ courses.forEach((course,i)=>{
+  const b=document.createElement("button");b.className="item-btn";
+  b.textContent="🎓 "+course.name;b.onclick=()=>showSemesters(i);list.appendChild(b);
+ });
+}
+function showSemesters(courseIndex){
+ currentCourse=courseIndex;hideAll();document.getElementById("semesterView").classList.remove("hidden");
+ const c=courses[currentCourse];document.getElementById("semesterCrumb").textContent="Home / "+c.name;
+ document.getElementById("semesterHeading").textContent=c.name+" — Semesters";
+ const list=document.getElementById("semesterList");list.innerHTML="";
+ c.semesters.forEach((sem,i)=>{const b=document.createElement("button");b.className="item-btn";b.textContent="📘 "+sem.semester;b.onclick=()=>showSubjects(i);list.appendChild(b);});
+ window.scrollTo(0,0);
+}
+function showSubjects(semesterIndex){
+ currentSemester=semesterIndex;hideAll();document.getElementById("subjectView").classList.remove("hidden");
+ const c=courses[currentCourse],sem=c.semesters[currentSemester];
+ document.getElementById("subjectCrumb").textContent="Home / "+c.name+" / "+sem.semester;
+ document.getElementById("subjectHeading").textContent=sem.semester+" — Subjects";
+ const list=document.getElementById("subjectList");list.innerHTML="";
+ sem.subjects.forEach((sub,i)=>{const b=document.createElement("button");b.className="item-btn";b.textContent="📚 "+sub[0];b.onclick=()=>showChapters(i);list.appendChild(b);});
+ window.scrollTo(0,0);
+}
+
+function makeQuestionGroup(title, questions){
+ const section=document.createElement("div");section.className="question-group";
+ const heading=document.createElement("h4");heading.textContent=title;
+ const ol=document.createElement("ol");
+ questions.forEach(q=>{const li=document.createElement("li");li.textContent=q;ol.appendChild(li);});
+ section.appendChild(heading);section.appendChild(ol);return section;
+}
+function makeQuestions(courseName,subjectName,chapter){
+ const c=courseName.toLowerCase(), s=subjectName.toLowerCase(), t=chapter.toLowerCase();
+ let short=[],long=[];
+ if(c.includes("b.com")){
+  short=[
+   "Define "+chapter+" and state its main objectives.",
+   "List any four important features or principles of "+chapter+".",
+   "Explain the meaning of the key terms used in "+chapter+".",
+   "Write a short note on the importance of "+chapter+"."
+  ];
+  long=[
+   "Explain "+chapter+" in detail with a suitable business or accounting example.",
+   "Discuss the procedure, principles and important steps involved in "+chapter+".",
+   "Explain the practical applications of "+chapter+" and discuss the common issues faced while applying it."
+  ];
+ }else if(c==="bba"){
+  short=[
+   "Define "+chapter+" in the context of business management.",
+   "State any four objectives or characteristics of "+chapter+".",
+   "What are the important functions or elements of "+chapter+"?",
+   "Write a short note on the role of "+chapter+" in an organisation."
+  ];
+  long=[
+   "Explain "+chapter+" in detail with a suitable business example.",
+   "Discuss the process and major factors involved in "+chapter+".",
+   "Evaluate the importance, benefits and limitations of "+chapter+" in modern organisations."
+  ];
+ }else if(c==="bzc" && s.includes("botany")){
+  short=[
+   "Define "+chapter+" and give two suitable examples.",
+   "List the important characteristics of "+chapter+".",
+   "Name the major types or parts associated with "+chapter+".",
+   "Write a short note on the biological importance of "+chapter+"."
+  ];
+  long=[
+   "Describe "+chapter+" with a neat, labelled diagram wherever applicable.",
+   "Explain the structure, types and important features of "+chapter+".",
+   "Discuss the functions, significance and applications of "+chapter+" with examples."
+  ];
+ }else if(c==="bzc" && s.includes("zoology")){
+  short=[
+   "Define "+chapter+" and mention its significance in zoology.",
+   "List the main characteristics or components of "+chapter+".",
+   "Give two examples related to "+chapter+" and state their importance.",
+   "Write a short note on the functions associated with "+chapter+"."
+  ];
+  long=[
+   "Explain "+chapter+" with suitable examples and a labelled diagram wherever relevant.",
+   "Describe the structure, classification or mechanism related to "+chapter+".",
+   "Discuss the biological importance and applications of "+chapter+"."
+  ];
+ }else if(c==="bzc" && s.includes("chemistry")){
+  short=[
+   "Define "+chapter+" and state its basic principles.",
+   "Write the important terms, laws or concepts related to "+chapter+".",
+   "Give suitable examples related to "+chapter+".",
+   "Mention two applications of "+chapter+"."
+  ];
+  long=[
+   "Explain the theory and fundamental principles of "+chapter+" with suitable examples.",
+   "Describe the important types, methods or reactions involved in "+chapter+".",
+   "Discuss the applications of "+chapter+" and include relevant equations or diagrams wherever applicable."
+  ];
+ }else if(c==="bca" || c.includes("computer science")){
+  short=[
+   "Define "+chapter+" and explain its purpose.",
+   "List the important features or components of "+chapter+".",
+   "Differentiate between the important terms or concepts in "+chapter+".",
+   "Write a short note on the applications of "+chapter+"."
+  ];
+  long=[
+   "Explain "+chapter+" in detail with a neat diagram, algorithm or program wherever applicable.",
+   "Describe the working procedure of "+chapter+" step by step with a suitable example.",
+   "Discuss the advantages, limitations and real-world applications of "+chapter+"."
+  ];
+ }else{
+  short=[
+   "Define "+chapter+" and explain its meaning.",
+   "List any four important features of "+chapter+".",
+   "What are the main types or elements of "+chapter+"?",
+   "Write a short note on the importance of "+chapter+"."
+  ];
+  long=[
+   "Explain "+chapter+" in detail with suitable examples.",
+   "Describe the major concepts, stages or methods involved in "+chapter+".",
+   "Discuss the importance, applications and limitations of "+chapter+"."
+  ];
+ }
+ // Tailor selected wording to common practical topics.
+ if(t.includes("sql")) short[2]="What is SQL? Explain any four commonly used SQL commands.";
+ if(t.includes("normalization")) long[1]="Explain database normalization. Describe 1NF, 2NF and 3NF with suitable examples.";
+ if(t.includes("arrays")) short[2]="What is an array? Explain one-dimensional and two-dimensional arrays.";
+ if(t.includes("linked list")) long[1]="Explain singly, doubly and circular linked lists with diagrams.";
+ if(t.includes("stack")) long[1]="Explain stack operations and applications with suitable examples.";
+ if(t.includes("queue")) long[1]="Explain linear and circular queues and their basic operations.";
+ if(t.includes("inheritance")) long[1]="Explain the types of inheritance with suitable examples.";
+ if(t.includes("photosynthesis")) long[1]="Explain the light and dark reactions of photosynthesis with a labelled diagram.";
+ if(t.includes("respiration")) long[1]="Explain the stages of cellular respiration and mention their significance.";
+ if(t.includes("mendelian")) long[1]="Explain Mendel's laws of inheritance with suitable genetic crosses.";
+ if(t.includes("chemical bonding")) long[1]="Explain ionic, covalent and coordinate bonding with suitable examples.";
+ if(t.includes("thermodynamics")) long[1]="State and explain the laws of thermodynamics and their chemical applications.";
+ if(t.includes("demand and supply")) long[1]="Explain the laws of demand and supply with diagrams and the factors affecting them.";
+ if(t.includes("final accounts")) long[1]="Explain the preparation of trading account, profit and loss account and balance sheet with a format.";
+ if(t.includes("capital budgeting")) long[1]="Explain capital budgeting and discuss the payback, ARR and NPV methods.";
+ if(t.includes("consumer decision")) long[1]="Explain the stages in the consumer buying decision process with an example.";
+ return {short,long};
+}
+
+function showChapters(subjectIndex){
+ currentSubject=subjectIndex;hideAll();document.getElementById("chapterView").classList.remove("hidden");
+ const c=courses[currentCourse],sem=c.semesters[currentSemester],sub=sem.subjects[currentSubject];
+ document.getElementById("chapterCrumb").textContent="Home / "+c.name+" / "+sem.semester+" / "+sub[0];
+ document.getElementById("chapterHeading").textContent=sub[0]+" — Chapters & Questions";
+ const list=document.getElementById("chapterList");list.innerHTML="";
+ sub[1].forEach((chapter,i)=>{
+  const details=document.createElement("details");details.className="chapter";
+  const summary=document.createElement("summary");summary.textContent="Chapter "+(i+1)+": "+chapter;
+  const div=document.createElement("div");div.className="questions";
+  const bank=makeQuestions(c.name,sub[0],chapter);
+  div.appendChild(makeQuestionGroup("Short-answer questions",bank.short));
+  div.appendChild(makeQuestionGroup("Long-answer questions",bank.long));
+  details.appendChild(summary);details.appendChild(div);list.appendChild(details);
+ });
+ window.scrollTo(0,0);
+}
+function backToSemesters(){showSemesters(currentCourse);}
+function backToSubjects(){showSubjects(currentSemester);}
+buildCourses();showHome();
+</script>
+</body>
+</html>
